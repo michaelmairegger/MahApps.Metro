@@ -126,6 +126,9 @@ namespace MahApps.Metro.Controls
             typeof(NumericUpDown),
             new PropertyMetadata(true, InterceptManualEnterChangedCallback));
 
+        public static readonly DependencyProperty SnapToMultipleOfIntervalProperty = DependencyProperty.Register(
+            "SnapToMultipleOfInterval", typeof(bool), typeof(NumericUpDown), new PropertyMetadata(default(bool)));
+
         private static void InterceptManualEnterChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             if (e.OldValue != e.NewValue && e.NewValue != null)
@@ -399,6 +402,15 @@ namespace MahApps.Metro.Controls
         {
             get { return (double)GetValue(MinimumProperty); }
             set { SetValue(MinimumProperty, value); }
+        }
+
+        [Bindable(true)]
+        [Category("Common")]
+        [DefaultValue(false)]
+        public bool SnapToMultipleOfInterval
+        {
+            get { return (bool)GetValue(SnapToMultipleOfIntervalProperty); }
+            set { SetValue(SnapToMultipleOfIntervalProperty, value); }
         }
 
         /// <summary>
@@ -1100,6 +1112,11 @@ namespace MahApps.Metro.Controls
             double convertedValue;
             if (ValidateText(tb.Text, out convertedValue))
             {
+                if (SnapToMultipleOfInterval)
+                {
+                    convertedValue = Math.Round(convertedValue / Interval) * Interval;
+                }
+
                 if (Value == convertedValue)
                 {
                     OnValueChanged(Value, Value);
